@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>জুই টেলিকম এন্ড কম্পিউটার</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f3f3f3; }
+    header { background: green; color: white; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; display: none; }
+    .login-container, .dashboard { display: none; padding: 20px; }
+    .login-box { width: 300px; margin: 100px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px #aaa; }
+    input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { cursor: pointer; font-weight: bold; }
+    .btn-green { background: green; color: white; }
+    .btn-red { background: red; color: white; }
+    .btn-blue { background: blue; color: white; }
+    nav { display: flex; background: #444; }
+    nav button { flex: 1; border: none; padding: 15px; background: #444; color: white; cursor: pointer; }
+    nav button.active { background: green; }
+    .tab-content { display: none; background: white; padding: 20px; border-radius: 10px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 8px; text-align: left; }
+    .receipt-box { border: 1px dashed #333; padding: 15px; margin-bottom: 15px; background: #fafafa; }
+    .receipt-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; text-align: center; }
+    .receipt-footer { margin-top: 10px; font-size: 14px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div class="login-container">
+  <div class="login-box">
+    <h3>লগইন করুন</h3>
+    <label>ইউজারনেম</label>
+    <input type="text" id="username" value="Jui Telicom and Computer" readonly>
+    <label>পাসওয়ার্ড</label>
+    <input type="password" id="password" placeholder="Password">
+    <button class="btn-green" onclick="login()">লগইন</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<header>জুই টেলিকম এন্ড কম্পিউটার</header>
+<div class="dashboard">
+  <nav>
+    <button onclick="openTab('income')" class="active">আজকের আয়</button>
+    <button onclick="openTab('expense')">আজকের ব্যায়</button>
+    <button onclick="openTab('manageIncome')">ম্যানেজ আয়</button>
+    <button onclick="openTab('manageExpense')">ম্যানেজ ব্যায়</button>
+    <button onclick="openTab('receipt')">বিবরণী</button>
+  </nav>
+
+  <!-- আজকের আয় -->
+  <div id="income" class="tab-content" style="display:block;">
+    <h3>আজকের আয়</h3>
+    <label>কাস্টমারের নাম</label>
+    <input type="text" id="custName" placeholder="বাংলায় লিখুন" pattern="[\u0980-\u09FF\s]+" required>
+    
+    <label>সার্ভিসের ধরণ</label>
+    <select id="serviceType" multiple>
+      <option>ফটোকপি</option>
+      <option>মেমরি লোড</option>
+      <option>হার্ড-ডিস্ক লোড</option>
+      <option>পাসপোট সাইজ এর ছবি</option>
+      <option>স্ট্যাম্প সাইজ এর ছবি</option>
+      <option>অন্যান্য সাইজ এর ছবি</option>
+      <option>কম্পিউটার কম্পোজ</option>
+      <option>স্ট্যাস্প কম্পোজ</option>
+      <option>কালার প্রিন্ট</option>
+      <option>সাদাকালো প্রিন্ট</option>
+      <option>জাতিয় পরিচয় পত্র প্রিন্ট ও লেমিনেটিং</option>
+      <option>জন্ম নিবন্ধন অথবা A4 সাইজ পেপার লেমিনেটিং</option>
+      <option>জন্ম নিবন্ধন আবেদন</option>
+      <option>জন্ম নিবন্ধন</option>
+      <option>জন্ম নিবন্ধন সংশোধন আবেদন</option>
+      <option>জাতিয় পরিচয় পত্রের আবেদন</option>
+      <option>জাতিয় পরিচয় পত্র সংশোধনের আবেদন</option>
+      <option>অন-লাইন চাকরির আবেদন</option>
+      <option>জমির খাজনা প্রদান</option>
+      <option>জমির পর্চা বের করা</option>
+      <option>নামজারির আবেদন</option>
+      <option>স্কুলের কাজ</option>
+      <option>Others</option>
+    </select>
+
+    <label>কাজের পরিমান</label>
+    <input type="number" id="quantity" min="1" max="100">
+
+    <label>তারিখ</label>
+    <input type="date" id="incomeDate">
+
+    <label>টাকার পরিমান</label>
+    <input type="number" id="amount">
+
+    <label>বিবরণী</label>
+    <textarea id="incomeNote"></textarea>
+
+    <button class="btn-green" onclick="saveIncome()">সংরক্ষণ</button>
+  </div>
+
+  <!-- আজকের ব্যায় -->
+  <div id="expense" class="tab-content">
+    <h3>আজকের ব্যায়</h3>
+    <label>ব্যায়ের কারণ</label>
+    <input type="text" id="expenseReason">
+
+    <label>টাকার পরিমান</label>
+    <input type="number" id="expenseAmount">
+
+    <label>তারিখ</label>
+    <input type="date" id="expenseDate">
+
+    <label>বিবরণী</label>
+    <textarea id="expenseNote"></textarea>
+
+    <button class="btn-green" onclick="saveExpense()">সংরক্ষণ</button>
+  </div>
+
+  <!-- ম্যানেজ আয় -->
+  <div id="manageIncome" class="tab-content">
+    <h3>ম্যানেজ আয়</h3>
+    <table id="incomeTable">
+      <tr><th>কাস্টমার</th><th>সার্ভিস</th><th>টাকা</th><th>তারিখ</th><th>অপশন</th></tr>
+    </table>
+  </div>
+
+  <!-- ম্যানেজ ব্যায় -->
+  <div id="manageExpense" class="tab-content">
+    <h3>ম্যানেজ ব্যায়</h3>
+    <table id="expenseTable">
+      <tr><th>কারণ</th><th>টাকা</th><th>তারিখ</th><th>অপশন</th></tr>
+    </table>
+  </div>
+
+  <!-- বিবরণী -->
+  <div id="receipt" class="tab-content">
+    <h3>মানি রিসিট</h3>
+    <div id="receiptData"></div>
+  </div>
+</div>
+
+<script>
+  // লগইন
+  function login() {
+    let pass = document.getElementById("password").value;
+    if (pass === "12345") {
+      document.querySelector(".login-container").style.display = "none";
+      document.querySelector("header").style.display = "block";
+      document.querySelector(".dashboard").style.display = "block";
+    } else {
+      alert("পাসওয়ার্ড ভুল!");
+    }
+  }
+
+  // ট্যাব খোলা
+  function openTab(tab) {
+    document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+    document.querySelectorAll("nav button").forEach(el => el.classList.remove("active"));
+    document.getElementById(tab).style.display = "block";
+    event.target.classList.add("active");
+  }
+
+  // PDF তৈরি
+  function downloadReceiptPDF(id) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let content = document.getElementById(id).innerText;
+    doc.text(content, 10, 10);
+    doc.save("Receipt.pdf");
+  }
+
+  // প্রিন্ট ফাংশন
+  function printReceipt(id) {
+    let content = document.getElementById(id).outerHTML;
+    let w = window.open();
+    w.document.write("<html><head><title>Print</title></head><body>");
+    w.document.write(content);
+    w.document.write("</body></html>");
+    w.print();
+    w.close();
+  }
+
+  // আয় সংরক্ষণ
+  let receiptCount = 1;
+  function saveIncome() {
+    let name = document.getElementById("custName").value;
+    let services = Array.from(document.getElementById("serviceType").selectedOptions).map(o => o.value).join(", ");
+    let amount = document.getElementById("amount").value;
+    let date = document.getElementById("incomeDate").value;
+    if (!name || !amount || !date) { alert("সব ঘর পূরণ করুন"); return; }
+
+    // ম্যানেজ আয় টেবিলে যোগ
+    let table = document.getElementById("incomeTable");
+    let row = table.insertRow();
+    row.innerHTML = `<td>${name}</td><td>${services}</td><td>${amount}</td><td>${date}</td>
+      <td><button class="btn-red" onclick="this.parentElement.parentElement.remove()">ডিলেট</button></td>`;
+
+    // রিসিটে যোগ
+    let receiptBox = document.createElement("div");
+    receiptBox.className = "receipt-box";
+    receiptBox.id = "receipt" + receiptCount;
+    receiptBox.innerHTML = `
+      <div class="receipt-header">জুই টেলিকম এন্ড কম্পিউটার<br>মানি রিসিট</div>
+      <p><b>কাস্টমার:</b> ${name}</p>
+      <p><b>সার্ভিস:</b> ${services}</p>
+      <p><b>টাকা:</b> ${amount} টাকা</p>
+      <p><b>তারিখ:</b> ${date}</p>
+      <div class="receipt-footer">ধন্যবাদ!</div>
+      <button class="btn-blue" onclick="printReceipt('receipt${receiptCount}')">প্রিন্ট</button>
+      <button class="btn-green" onclick="downloadReceiptPDF('receipt${receiptCount}')">ডাউনলোড</button>
+    `;
+    document.getElementById("receiptData").appendChild(receiptBox);
+
+    receiptCount++;
+    alert("আয় সংরক্ষিত হয়েছে ও রিসিট তৈরি হয়েছে");
+  }
+
+  // ব্যায় সংরক্ষণ
+  function saveExpense() {
+    let reason = document.getElementById("expenseReason").value;
+    let amount = document.getElementById("expenseAmount").value;
+    let date = document.getElementById("expenseDate").value;
+    if (!reason || !amount || !date) { alert("সব ঘর পূরণ করুন"); return; }
+
+    let table = document.getElementById("expenseTable");
+    let row = table.insertRow();
+    row.innerHTML = `<td>${reason}</td><td>${amount}</td><td>${date}</td>
+      <td><button class="btn-red" onclick="this.parentElement.parentElement.remove()">ডিলেট</button></td>`;
+    alert("ব্যায় সংরক্ষিত হয়েছে");
+  }
+</script>
+
+</body>
+</html>
